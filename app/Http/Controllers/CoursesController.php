@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
-use App\CoursesByTeacherModel;
-use App\CoursesByStudentModel;
-use App\StudentsByCourseModel;
 use App\CoursesModel;
 use App\TeachersModel;
 use App\StudentsModel;

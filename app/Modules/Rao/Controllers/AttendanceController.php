@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Rao\Controllers;
 
 use App\AttendanceModel;
 use App\Http\Requests;
