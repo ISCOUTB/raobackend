@@ -14,6 +14,7 @@ Backend de la aplicación de Registro de Asistencias, que permitirá a los docen
 - Carlos Buelvas
 - Jorge Franco
 - [Santiago Mendoza](http://www.santiagomendoza.org)
+- [Jairo Serrano] (http://jairoesc.com)
 
 Desarrollado por la Facultad de Ingeniería de Sistemas y la [Coordinación de Educación a Distancia](http://www.utbvirtual.edu.co)  de la Universidad Tecnológica de Bolívar.
 
