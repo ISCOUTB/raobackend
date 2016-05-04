@@ -3,7 +3,7 @@ Backend de la aplicación de Registro de Asistencias, que permitirá a los docen
 
 ## Tecnologías
 
-- PHP Laravel 5.0
+- PHP Laravel 5.1 LTS
 - HTML5, CSS3 y JavaScript
 - MySQL
 
