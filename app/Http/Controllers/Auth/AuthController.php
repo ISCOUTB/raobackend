@@ -27,6 +27,10 @@ use AuthenticatesAndRegistersUsers,
     protected $maxLoginAttempts = 2;
     // Time for which user is going to be blocked in seconds
     protected $lockoutTime = 300;
+    // Redirect to page after login
+    protected $redirectPath = '/admin/periodos';
+    // Default Attribute to login
+    protected $username = 'username';
 
     /**
      * Create a new authentication controller instance.
@@ -34,6 +38,7 @@ use AuthenticatesAndRegistersUsers,
      * @return void
      */
     public function __construct() {
+        
         $this->middleware('guest', ['except' => 'getLogout']);
     }
 
@@ -46,7 +51,7 @@ use AuthenticatesAndRegistersUsers,
     protected function validator(array $data) {
         return Validator::make($data, [
                     'name' => 'required|max:255',
-                    'email' => 'required|email|max:255|unique:users',
+                    'username' => 'required|max:255|unique:users',
                     'password' => 'required|confirmed|min:6',
         ]);
     }
@@ -60,7 +65,7 @@ use AuthenticatesAndRegistersUsers,
     protected function create(array $data) {
         return User::create([
                     'name' => $data['name'],
-                    'email' => $data['email'],
+                    'username' => $data['username'],
                     'password' => bcrypt($data['password']),
         ]);
     }

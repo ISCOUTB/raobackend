@@ -1,0 +1,13 @@
+
+
+.navbar-black {
+    background-color: #333333 !important;
+}
+
+.navbar-black ul li a, .navbar-brand-white {
+    color: white !important;
+}
+.navbar-black ul li[class='active'] a{
+    color: white !important;
+    background-color: #333333 !important;
+}
