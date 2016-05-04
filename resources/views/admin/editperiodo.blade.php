@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Administrar Periodos</title>
-        <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
-    </head>
-    <body>
+@extends('layouts.admin')
+
+@section('title', 'Administrar Periodos')
+
+@section('content')
         <div class="container">
             <div class="row">
                 <div class="col-sm-12">
@@ -34,7 +26,4 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
-        <script src="/js/jquery.min.js"></script>
-        <script src="/bootstrap/js/bootstrap.min.js"></script>
-    </body>
-</html>
+        @endsection
