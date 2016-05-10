@@ -14,6 +14,7 @@ class CreateAlarmsTable extends Migration {
         Schema::create('alarms', function(Blueprint $table) {
             $table->increments('ID')->unsigned();
             $table->string('TEACHER', 10);
+            $table->string('STUDENT', 10);
             $table->string('COURSE', 15);
             $table->string('TYPE', 10);
             $table->string('MESSAGE', 130);
