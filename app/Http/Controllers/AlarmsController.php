@@ -16,8 +16,7 @@ class AlarmsController extends Controller {
      * @param $idstudent , $idcourse
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function createAlarm($NRC)
-    {
+    public function createAlarm($NRC) {
         $studentsbycourse = MatriculasModel::where("IDNUMBER", "=", $NRC)->get();
 
         if ($studentsbycourse->isEmpty()) {
@@ -25,25 +24,20 @@ class AlarmsController extends Controller {
             return response()->json($object);
         }
 
-        $students=array();
+        $students = array();
 
-        foreach($studentsbycourse as $value){
-            array_push($students,$value["USERNAME"]);
+        foreach ($studentsbycourse as $value) {
+            array_push($students, $value["USERNAME"]);
         }
 
-        foreach ($students as $id){
+        foreach ($students as $id) {
             $attendances = AttendanceModel::where("NRC", "=", $NRC)->Where("STUDENTID", "=", $id)->get();
 
             $came = 0;
             $notcame = 0;
-            /*$arrivedlate = 0;
-            $leftsoon = 0;
-            $DK = 0;*/
 
             foreach ($attendances as $value) {
-
                 $attendance = $value["ATTENDANCE"];
-
                 switch ($attendance) {
                     case 0:
                         $came += 1;
@@ -51,27 +45,13 @@ class AlarmsController extends Controller {
                     case 1:
                         $notcame += 1;
                         break;
-                    /*case 2:
-                        $arrivedlate += 1;
-                        break;
-                    case 3:
-                        $leftsoon += 1;
-                        break;
-                    case 4:
-                        $DK += 1;
-                        break;*/
                 }
             }
-
-            //$total = $came + $notcame + $arrivedlate + $leftsoon + $DK;
-
             $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->get();
             $student = StudentsModel::where("ID", "=", $id)->get();
-
             //Danger alarm
             $danger = AlarmsModel::where("STUDENT", "=", $id)->where("COURSE", "=", $NRC)->where("TYPE", "=", "danger")->first();
-
-            if ($notcame>= 3) {
+            if ($notcame >= 3) {
                 if ($danger == null) {
                     $alarm = new AlarmsModel;
                     $alarm->TEACHER = $course[0]["DOCENTEID"];
@@ -85,21 +65,19 @@ class AlarmsController extends Controller {
                 }
             }
         }
-
     }
 
-    public function showCoursesAlarms($NRC)
-    {
+    public function showCoursesAlarms($NRC) {
         $danger = AlarmsModel::where("COURSE", "=", $NRC)->Where("TYPE", "=", "danger")->get();
-        if($danger->isEmpty()){
+        if ($danger->isEmpty()) {
             return "No hay alarmas";
-        }else{
+        } else {
             $object = array(
                 "teacher id" => $danger[0]["TEACHER"],
                 "nrc" => $danger[0]["COURSE"]
             );
 
-            foreach($danger as $value){
+            foreach ($danger as $value) {
                 $var = array(
                     "student id" => $value["STUDENT"],
                     "message" => $value["MESSAGE"],
@@ -110,4 +88,5 @@ class AlarmsController extends Controller {
             return response()->json($object);
         }
     }
+
 }

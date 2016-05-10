@@ -14,6 +14,7 @@ class CreateApptokenTable extends Migration {
         Schema::create('apptoken', function(Blueprint $table) {
             $table->increments('ID')->unsigned();
             $table->string('USERNAME', 10);
+            $table->datetime('EXPIRATION');
             $table->string('TOKEN', 50);
             $table->timestamps();
         });

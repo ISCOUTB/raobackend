@@ -28,7 +28,7 @@ class TokenGeneratorMiddleware {
           $current .= serialize(Request::all());
           file_put_contents($file, $current); */
 
-        if (!$username or ! $password) {
+        if (!$username or !$password) {
             return response('Datos de acceso faltantes.', 401);
         }
 
