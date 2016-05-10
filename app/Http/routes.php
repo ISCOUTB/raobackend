@@ -76,98 +76,98 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 //Routes
 Route::post('token', ['middleware' => 'tokengenerator', 'uses' => 'Auth\TokenController@token']);
 
-//Route::group(['middleware' => 'tokenauth'], function() {
-
-/*
- * Muestra la información de un profesor
- */
-Route::get('teacher/{id}', function ($id) {
-    Event::fire('teacher.showTeachersInfo', $id);
-    $controller = new PersonsController();
-    return $controller->showTeachersInfo($id);
-});
-
-/*
- * Muestra la información de un estudiante
- */
-Route::get('student/{id}', function ($id) {
-    Event::fire('student.showStudentsInfo', $id);
-    $controller = new PersonsController();
-    return $controller->showStudentsInfo($id);
-});
-
-/*
- * Muestra la información de un curso
- */
-Route::get('course/{NRC}', function ($NRC) {
-    Event::fire('course.showCoursesInfo', $NRC);
-    $controller = new CoursesController();
-    return $controller->showCoursesInfo($NRC);
-});
-
-/*
- * Muestra cursos que dicta el profesor id. Devuelve colección de cursos.
- */
-Route::get('teacher/{id}/courses', function ($id) {
-    Event::fire('course.showCoursesByTeacher', $id);
-    $controller = new CoursesController();
-    return $controller->showCoursesByTeacher($id);
-});
-
-/*
- * Muestra la lista de estudiantes del curso NRC del profesor id ya capturado
- */
-Route::get('course/{NRC}/students', 'CoursesController@showStudentsByCourse');
-
-/*
- * Muestra los cursos en los que esta inscrito el estudiante id
- */
-Route::get('student/{id}/courses', 'CoursesController@showCoursesByStudent');
-
-/*
- * Guarda asistencias en la base de datos
- */
-Route::resource('attendance', 'AttendanceController');
-
-Route::group(['middleware' => 'filter'], function () {
-    /*
-     * Muestra las estadisticas de asistencia de un estudiante a un curso en %
-     */
-    Route::get('student/{id}/course/{NRC}/attendance', 'StatisticsController@showStatisticsByStudentByCourse');
+Route::group(['middleware' => 'tokenauth'], function() {
 
     /*
-     * Muestra las estadisticas de asistencia de un curso
+     * Muestra la información de un profesor
      */
-    Route::get('course/{NRC}/attendance', function ($NRC) {
+    Route::get('teacher/{id}', function ($id) {
+        Event::fire('teacher.showTeachersInfo', $id);
+        $controller = new PersonsController();
+        return $controller->showTeachersInfo($id);
+    });
+
+    /*
+     * Muestra la información de un estudiante
+     */
+    Route::get('student/{id}', function ($id) {
+        Event::fire('student.showStudentsInfo', $id);
+        $controller = new PersonsController();
+        return $controller->showStudentsInfo($id);
+    });
+
+    /*
+     * Muestra la información de un curso
+     */
+    Route::get('course/{NRC}', function ($NRC) {
         Event::fire('course.showCoursesInfo', $NRC);
-        $controller = new StatisticsController();
-        return $controller->showStatisticsByCourse($NRC);
+        $controller = new CoursesController();
+        return $controller->showCoursesInfo($NRC);
     });
 
     /*
-     * Muestra las estadisticas de asistencia de un estudiante
+     * Muestra cursos que dicta el profesor id. Devuelve colección de cursos.
      */
-    //Route::get('student/{id}/attendance', 'StatisticsController@showStatisticsByStudent');
-
-    /*
-     * Muestra las alarmas por falta de asistencia de estudiantes a un curso
-     */
-    Route::get('course/{NRC}/alarms', function ($NRC) {
-        //Event::fire('course.showCoursesInfo', $NRC);
-        $controller = new AlarmsController();
-        return $controller->showCoursesAlarms($NRC);
+    Route::get('teacher/{id}/courses', function ($id) {
+        Event::fire('course.showCoursesByTeacher', $id);
+        $controller = new CoursesController();
+        return $controller->showCoursesByTeacher($id);
     });
 
     /*
-     * Muestra las alarmas por falta de asistencia de estudiantes a un curso
+     * Muestra la lista de estudiantes del curso NRC del profesor id ya capturado
      */
-    /* Route::get('course/{NRC}/student/{id}/alarms', function ($NRC, $id) {
-      //Event::fire('course.showCoursesInfo', $NRC);
-      $controller = new AlarmsController();
-      return $controller->showAlarmsByStudentByCourse($NRC);
-      }); */
+    Route::get('course/{NRC}/students', 'CoursesController@showStudentsByCourse');
+
+    /*
+     * Muestra los cursos en los que esta inscrito el estudiante id
+     */
+    Route::get('student/{id}/courses', 'CoursesController@showCoursesByStudent');
+
+    /*
+     * Guarda asistencias en la base de datos
+     */
+    Route::resource('attendance', 'AttendanceController');
+
+    Route::group(['middleware' => 'filter'], function () {
+        /*
+         * Muestra las estadisticas de asistencia de un estudiante a un curso en %
+         */
+        Route::get('student/{id}/course/{NRC}/attendance', 'StatisticsController@showStatisticsByStudentByCourse');
+
+        /*
+         * Muestra las estadisticas de asistencia de un curso
+         */
+        Route::get('course/{NRC}/attendance', function ($NRC) {
+            Event::fire('course.showCoursesInfo', $NRC);
+            $controller = new StatisticsController();
+            return $controller->showStatisticsByCourse($NRC);
+        });
+
+        /*
+         * Muestra las estadisticas de asistencia de un estudiante
+         */
+        //Route::get('student/{id}/attendance', 'StatisticsController@showStatisticsByStudent');
+
+        /*
+         * Muestra las alarmas por falta de asistencia de estudiantes a un curso
+         */
+        Route::get('course/{NRC}/alarms', function ($NRC) {
+            //Event::fire('course.showCoursesInfo', $NRC);
+            $controller = new AlarmsController();
+            return $controller->showCoursesAlarms($NRC);
+        });
+
+        /*
+         * Muestra las alarmas por falta de asistencia de estudiantes a un curso
+         */
+        /* Route::get('course/{NRC}/student/{id}/alarms', function ($NRC, $id) {
+          //Event::fire('course.showCoursesInfo', $NRC);
+          $controller = new AlarmsController();
+          return $controller->showAlarmsByStudentByCourse($NRC);
+          }); */
+    });
 });
-//});
 
 
 
