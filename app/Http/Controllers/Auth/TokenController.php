@@ -15,7 +15,9 @@ class TokenController extends Controller {
     public function token(Request $request) {
 
         $username = $request->input('username');
-        $type = $this->typeOfUser($username);
+        $data = $this->typeOfUser($username);
+        $type = $data["type"];
+        $person = $data["person"];
         $datenow = (new \DateTime())->format('Y-m-d H:i:s');
         $token = TokenModel::where("USERNAME", "=", $username)->where("expiration", ">", $datenow)->first();
         if ($token == null) {
@@ -76,17 +78,17 @@ class TokenController extends Controller {
     public function typeOfUser($username) {
         $person = StudentsModel::where("ID", "=", $username)->first();
         if ($person) {
-            return "student";
+            return ["type" => "student", "person" => $person];
         }
         $person = TeachersModel::where("ID", "=", $username)->first();
         if ($person) {
-            return "teacher";
+            return ["type" => "teacher", "person" => $person];
         }
         $person = PersonsModel::where("ID", "=", $username)->first();
         if ($person) {
-            return "Other";
+            return ["type" => "other", "person" => $person];
         }
-        return "Undefined";
+        return ["type" => "Undefined", "person" => $person];
     }
 
 }
