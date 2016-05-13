@@ -21,7 +21,7 @@ class TokenController extends Controller {
         $datenow = (new \DateTime())->format('Y-m-d H:i:s');
         $token = TokenModel::where("USERNAME", "=", $username)->where("expiration", ">", $datenow)->first();
         if ($token == null) {
-            $tokenNew = $this->createToken(64, 5, true, true, [$person->EMAIL, $person->ID, $person->NOMBRES]);
+            $tokenNew = $this->createToken(64, 5, true, false, [$person->EMAIL, $person->ID, $person->NOMBRES]);
             $token = new TokenModel;
             $token->USERNAME = $username;
             $token->TOKEN = $tokenNew;
@@ -40,7 +40,7 @@ class TokenController extends Controller {
         return $object;
     }
 
-    public function createToken($len = 64, $output = 5, $standardChars = true, $specialChars = true, $chars = array()) {
+    public function createToken($len = 64, $output = 5, $standardChars = true, $specialChars = false, $chars = array()) {
         $out = '';
         $len = intval($len);
         $outputMap = array(1 => 2, 2 => 8, 3 => 10, 4 => 16, 5 => 10);
