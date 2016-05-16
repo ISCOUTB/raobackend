@@ -8,7 +8,6 @@ use App\TeachersModel;
 use App\PersonsModel;
 use Illuminate\Http\Request;
 use App\TokenModel;
-use DateTime;
 
 class TokenController extends Controller {
 
@@ -19,14 +18,11 @@ class TokenController extends Controller {
         $type = $data["type"];
         $person = $data["person"];
         $datenow = (new \DateTime())->format('Y-m-d H:i:s');
-        $token = TokenModel::where("USERNAME", "=", $username)->where("expiration", ">", $datenow)->first();
-        if ($token == null) {
-            $tokenNew = $this->createToken(64, 5, true, false, [$person->EMAIL, $person->ID, $person->NOMBRES]);
+        $token = TokenModel::where("USERNAME", "=", $username)->first();
+        if ($token == null || $token->expiration > $datenow) {
+            $tokenNew = $this->createToken(50, 5, true, false, [$person->EMAIL, $person->ID, $person->NOMBRES]);
             $token = new TokenModel;
-            $token->USERNAME = $username;
-            $token->TOKEN = $tokenNew;
-            $token->expiration = (new DateTime())->modify('+48 hours')->format('Y-m-d H:i:s');
-            $token->save();
+            $token = $token->createToken($username, $tokenNew);
             $object = array(
                 "type" => $type,
                 "token" => $tokenNew
@@ -40,6 +36,14 @@ class TokenController extends Controller {
         return $object;
     }
 
+    public function tokenLogout(Request $request) {
+        $username = $request->input('username');
+        $token = TokenModel::where("USERNAME", "=", $username)->delete();
+        if ($token) {
+            return "Logout correctly.";
+        }
+    }
+
     public function createToken($len = 64, $output = 5, $standardChars = true, $specialChars = false, $chars = array()) {
         $out = '';
         $len = intval($len);
@@ -50,6 +54,7 @@ class TokenController extends Controller {
         if ($standardChars) {
             $chars = array_merge($chars, range(48, 57), range(65, 90), range(97, 122));
         }
+
         if ($specialChars) {
             $chars = array_merge($chars, range(33, 47), range(58, 64), range(91, 96), range(123, 126));
         }

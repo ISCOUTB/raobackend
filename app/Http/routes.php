@@ -78,6 +78,7 @@ Route::post('token', ['middleware' => 'tokengenerator', 'uses' => 'Auth\TokenCon
 
 Route::group(['middleware' => 'tokenauth'], function() {
 
+    Route::post('tokenlogout', 'Auth\TokenController@tokenLogout');
     /*
      * Muestra la información de un profesor
      */
