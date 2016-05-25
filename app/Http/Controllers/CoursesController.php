@@ -122,7 +122,7 @@ class CoursesController extends Controller {
                 $studentsbycourse_JSON["students"][] = $var;
             }
         } else {
-            $course = CoursesModel::where("NRC", "=", $NRC)->first();
+            $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
             if ($course) {
                 $studentsbycourse_JSON = "No hay estudiantes matriculados en el curso con el NRC " . $NRC;
             } else {
