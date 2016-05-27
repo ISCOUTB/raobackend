@@ -82,7 +82,13 @@ class CoursesController extends Controller {
         } else {
             $teacher = TeachersModel::where("ID", "=", $id)->first();
             if ($teacher) {
-                $object = "El usuario no tiene ningún curso.";
+                $object = array(
+                    "id" => $teacher->ID,
+                    "names" => $teacher->NOMBRES,
+                    "lastnames" => $teacher->APELLIDOS
+                );
+                $object["resource_uri"] = "/teacher/" . $coursesbyteacher[0]["TEACHERID"];
+                $object["courses"] = "El usuario no tiene ningún curso.";
             } else {
                 $object = "El usuario con el código" . $id . " no existe o no es un docente.";
             }
@@ -178,7 +184,10 @@ class CoursesController extends Controller {
         } else {
             $student = StudentsModel::where("ID", "=", $id)->first();
             if ($student) {
-                $coursesbystudent_JSON = "El estudiante con código " . $id . " no tiene cursos matriculados";
+                $coursesbystudent_JSON = array(
+                    "student_id" => $student->USERNAME
+                );
+                $coursesbystudent_JSON["courses"] = "El estudiante con código " . $id . " no tiene cursos matriculados";
             } else {
                 $coursesbystudent_JSON = "El estudiante con código " . $id . " no existe o no está matriculado como estudiante en ningún curso.";
             }
