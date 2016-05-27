@@ -94,7 +94,7 @@ class CoursesController extends Controller {
                 $object["resource_uri"] = "/teacher/" . $teacher->ID;
                 $object["courses"] = "El usuario no tiene ningún curso.";
             } else {
-                $object = "El usuario con el código" . $id . " no existe o no es un docente.";
+                $object = "El usuario no existe o no es un docente.";
             }
         }
         return response()->json($object);
@@ -196,9 +196,9 @@ class CoursesController extends Controller {
                 $coursesbystudent_JSON = array(
                     "student_id" => $student->ID
                 );
-                $coursesbystudent_JSON["courses"] = "El estudiante con código " . $id . " no tiene cursos matriculados";
+                $coursesbystudent_JSON["courses"] = "El usuario no tiene ningún curso.";
             } else {
-                $coursesbystudent_JSON = "El estudiante con código " . $id . " no existe o no está matriculado como estudiante en ningún curso.";
+                $coursesbystudent_JSON = "El estudiante no existe o no está matriculado como estudiante en ningún curso.";
             }
         }
 
