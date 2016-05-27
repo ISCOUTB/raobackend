@@ -91,7 +91,7 @@ class CoursesController extends Controller {
                     "names" => $teacher->NOMBRES,
                     "lastnames" => $teacher->APELLIDOS
                 );
-                $object["resource_uri"] = "/teacher/" . $teacher->TEACHERID;
+                $object["resource_uri"] = "/teacher/" . $teacher->ID;
                 $object["courses"] = "El usuario no tiene ningún curso.";
             } else {
                 $object = "El usuario con el código" . $id . " no existe o no es un docente.";
