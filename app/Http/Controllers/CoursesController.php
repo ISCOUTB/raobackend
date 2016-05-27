@@ -55,13 +55,17 @@ class CoursesController extends Controller {
         $coursesbyteacher = MatriculasModel::where("USERNAME", "=", $id)->where('ROLE', '=', 'editingteacher');
         $coursesbyteacher->where(function($query) {
             $periodos = new PeriodosModel;
-            foreach ($periodos->periodosActivos() as $periodo) {
-                $query->orWhere('IDNUMBER', 'like', '%' . $periodo->periodo);
+            $periodosActivos = $periodos->periodosActivos();
+            if (count($periodosActivos) != 0) {
+                foreach ($periodosActivos as $periodo) {
+                    $query->orWhere('IDNUMBER', 'like', '%' . $periodo->periodo);
+                }
+            } else {
+                $query->orWhere('IDNUMBER', 'like', '%' . "0000-00");
             }
         });
 
         $coursesbyteacher = $coursesbyteacher->get();
-
         if (!$coursesbyteacher->isEmpty()) {
             $object = array(
                 "id" => $coursesbyteacher[0]->teacher["ID"],
@@ -87,7 +91,7 @@ class CoursesController extends Controller {
                     "names" => $teacher->NOMBRES,
                     "lastnames" => $teacher->APELLIDOS
                 );
-                $object["resource_uri"] = "/teacher/" . $coursesbyteacher[0]["TEACHERID"];
+                $object["resource_uri"] = "/teacher/" . $teacher->TEACHERID;
                 $object["courses"] = "El usuario no tiene ningún curso.";
             } else {
                 $object = "El usuario con el código" . $id . " no existe o no es un docente.";
@@ -154,8 +158,13 @@ class CoursesController extends Controller {
 
         $coursesbystudent->where(function($query) {
             $periodos = new PeriodosModel;
-            foreach ($periodos->periodosActivos() as $periodo) {
-                $query->orWhere('IDNUMBER', 'like', '%' . $periodo->periodo);
+            $periodosActivos = $periodos->periodosActivos();
+            if (count($periodosActivos) != 0) {
+                foreach ($periodosActivos as $periodo) {
+                    $query->orWhere('IDNUMBER', 'like', '%' . $periodo->periodo);
+                }
+            } else {
+                $query->orWhere('IDNUMBER', 'like', '%' . "0000-00");
             }
         });
 
@@ -185,7 +194,7 @@ class CoursesController extends Controller {
             $student = StudentsModel::where("ID", "=", $id)->first();
             if ($student) {
                 $coursesbystudent_JSON = array(
-                    "student_id" => $student->USERNAME
+                    "student_id" => $student->ID
                 );
                 $coursesbystudent_JSON["courses"] = "El estudiante con código " . $id . " no tiene cursos matriculados";
             } else {
