@@ -98,7 +98,7 @@ Route::group(['middleware' => 'tokenauth'], function() {
     });
 
     /*
-     * Muestra la información de un curso
+     * Muestra la información de un curso. Si es docente, muestra la lista de estudiantes.
      */
     Route::get('course/{NRC}', function ($NRC) {
         Event::fire('course.showCoursesInfo', $NRC);
@@ -116,11 +116,6 @@ Route::group(['middleware' => 'tokenauth'], function() {
     });
 
     /*
-     * Muestra la lista de estudiantes del curso NRC del profesor id ya capturado
-     */
-    Route::get('course/{NRC}/students', 'CoursesController@showStudentsByCourse');
-
-    /*
      * Muestra los cursos en los que esta inscrito el estudiante id
      */
     Route::get('student/{id}/courses', 'CoursesController@showCoursesByStudent');
@@ -132,7 +127,7 @@ Route::group(['middleware' => 'tokenauth'], function() {
 
     Route::group(['middleware' => 'filter'], function () {
         /*
-         * Muestra las estadisticas de asistencia de un estudiante a un curso en %
+         * Muestra las estadisticas de asistencia de un estudiante a un curso
          */
         Route::get('student/{id}/course/{NRC}/attendance', 'StatisticsController@showStatisticsByStudentByCourse');
 

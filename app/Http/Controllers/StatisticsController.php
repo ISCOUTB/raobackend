@@ -13,6 +13,7 @@ use App\AttendanceModel;
 use App\MatriculasModel;
 use App\StudentsModel;
 use App\CoursesModel;
+use Request as RequestData;
 
 class StatisticsController extends Controller {
 
@@ -22,22 +23,33 @@ class StatisticsController extends Controller {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showStatisticsByStudentByCourse($id, $NRC, $response = true) {
-        $data = AttendanceModel::where("STUDENTID", "=", $id)
-                ->where("NRC", "=", $NRC)->get();
+        $username = RequestData::input('username');
+        $sameUser = $id != $username;
+        $matriculado = MatriculasModel::enrolledAs($NRC, $id);
+        if ($sameUser) {
+            $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
+            if (!$course) {
+                $object = "No existe un curso con el NRC " . $NRC;
+                return $object;
+            }
+            if (strtoupper($course->DOCENTEID) != $username || $matriculado == null) {
+                return response()->json("No tienes acceso a esta información.");
+            }
+        } else {
+            if ($matriculado == null) {
+                return response()->json("No estas matriculado en este curso");
+            }
+        }
+
+        $data = AttendanceModel::where("STUDENTID", "=", $id)->where("NRC", "=", $NRC)->get();
         if ($data->isEmpty()) {
             $student = StudentsModel::where("ID", "=", $id)->first();
             if (!$student) {
                 $object = "No existe un estudiante con el código " . $id;
                 return $object;
-            }else{
-                $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
-                if (!$course) {
-                    $object = "No existe un curso con el NRC " . $NRC;
-                    return $object;
-                }
             }
         }
-        $object = array("student_id" => $id,"nrc" => $NRC);
+        $object = array("student_id" => $id, "nrc" => $NRC);
         $came = $notcame = 0;
         foreach ($data as $value) {
             $attendance_log = $value["ATTENDANCE"];
@@ -58,7 +70,7 @@ class StatisticsController extends Controller {
                 array("key" => "Came", "value" => round($came * 100 / $total, 2, PHP_ROUND_HALF_UP)), //2 decimals round
                 array("key" => "Did not come", "value" => round($notcame * 100 / $total, 2, PHP_ROUND_HALF_UP)),
             );
-            $attendance['value'] =  array(
+            $attendance['value'] = array(
                 array("key" => "Came", "value" => $came), //2 decimals round
                 array("key" => "Did not come", "value" => $notcame),
             );
@@ -118,7 +130,7 @@ class StatisticsController extends Controller {
             "students" => array()
         );
 
-        $matriculas = MatriculasModel::where("IDNUMBER", "=", $NRC)->where('ROLE','=', 'student')->get();
+        $matriculas = MatriculasModel::where("IDNUMBER", "=", $NRC)->where('ROLE', '=', 'student')->get();
 
         foreach ($matriculas as $matricula) {
             $student = $matricula->student;
