@@ -26,8 +26,8 @@ class StatisticsController extends Controller {
         $username = RequestData::input('username');
         $sameUser = $id != $username;
         $matriculado = MatriculasModel::enrolledAs($NRC, $id);
+        $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
         if ($sameUser) {
-            $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
             if (!$course) {
                 $object = "No existe un curso con el NRC " . $NRC;
                 return $object;
@@ -82,6 +82,7 @@ class StatisticsController extends Controller {
             $attendance['value'] = $attendance['percent'];
         }
         $object["attendance"] = $attendance;
+        $object["subject"] = $course->NOMBREASIGNATURA;
 
         if ($response) {
             return response()->json($object); //returns json object
