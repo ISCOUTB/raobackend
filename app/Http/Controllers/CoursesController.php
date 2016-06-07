@@ -24,11 +24,11 @@ class CoursesController extends Controller {
     public function showCoursesInfo($NRC) {
         $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
         $username = RequestData::input('username');
-        $role = MatriculasModel::enrolledAs($NRC, $username);
-        if (!$role) {
-            return response()->json(['No estás matriculado en este curso.']);
-        }
         if ($course) {
+            $role = MatriculasModel::enrolledAs($NRC, $username);
+            if (!$role) {
+                return response()->json(['No estás matriculado en este curso.']);
+            }
             $object = array(
                 "subject_name" => $course["NOMBREASIGNATURA"],
                 "nrc" => $course["NRC_PERIODO_KEY"],
