@@ -23,7 +23,7 @@ class CoursesController extends Controller {
      */
     public function showCoursesInfo($NRC) {
         $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
-        $username = RequestData::input('username');
+        $username = strtolower(RequestData::input('username'));
         if ($course) {
             $role = MatriculasModel::enrolledAs($NRC, $username);
             if (!$role) {
@@ -45,7 +45,7 @@ class CoursesController extends Controller {
                     "teacher_uri" => "/teacher/" . $course["DOCENTEID"]
                 )
             );
-            if ($course["DOCENTEID"] == $username) {
+            if (strtolower($course["DOCENTEID"]) == $username) {
                 $students = $this->showStudentsByCourse($NRC, $course);
                 $object["students"] = $students;
             } else {

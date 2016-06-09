@@ -23,7 +23,7 @@ class StatisticsController extends Controller {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showStatisticsByStudentByCourse($id, $NRC, $response = true) {
-        $username = RequestData::input('username');
+        $username = strtolower(RequestData::input('username'));
         $sameUser = $id != $username;
         $matriculado = MatriculasModel::enrolledAs($NRC, $id);
         $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
@@ -32,7 +32,7 @@ class StatisticsController extends Controller {
                 $object = "No existe un curso con el NRC " . $NRC;
                 return $object;
             }
-            if (strtoupper($course->DOCENTEID) != $username || $matriculado == null) {
+            if (strtolower($course->DOCENTEID) != $username || $matriculado == null) {
                 return response()->json("No tienes acceso a esta información.");
             }
         } else {
