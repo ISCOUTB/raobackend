@@ -16,7 +16,7 @@ class StatisticsValidator {
     public function validateUserEnrol($username, $id, $course) {
         $NRC = $course->NRC_PERIODO_KEY;
         $matriculado = MatriculasModel::enrolledAs($NRC, $id);
-        
+
         $sameUser = $id != $username;
         if ($sameUser) {
             if (!$course) {
@@ -53,13 +53,19 @@ class StatisticsValidator {
 
     public function validateIsTeacherOfCourse($username, $NRC) {
         $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
-        if (strtolower($course->DOCENTEID) != $username) {
-            $this->validationMessage = "No tienes acceso a esta información.";
+        if ($course) {
+            if (strtolower($course->DOCENTEID) != $username) {
+                $this->validationMessage = "No tienes acceso a esta información.";
+                $this->validationPass = false;
+                return false;
+            } else {
+                $this->validationPass = true;
+                return true;
+            }
+        } else {
+            $this->validationMessage = "No existe un curso con el NRC " . $NRC;
             $this->validationPass = false;
             return false;
-        } else {
-            $this->validationPass = true;
-            return true;
         }
     }
 
