@@ -82,6 +82,7 @@ class StatisticsController extends Controller {
             $response_data = array(
                 "nrc" => $NRC,
                 "resource_uri" => "/course/" . $NRC,
+                "subject" => $matriculas[0]->course->NOMBREASIGNATURA,
                 "students" => array()
             );
             foreach ($matriculas as $matricula) {
