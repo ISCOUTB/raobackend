@@ -21,7 +21,8 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="/admin/periodos">Periodos <span class="sr-only">(current)</span></a></li>
+                        <li class="active"><a href="/admin/periodos">Periodos</a></li>
+                        <li class="active"><a href="/admin/apps">Apps</a></li>
                         <li><a href="https://github.com/IngenieriaDeSistemasUTB/sat/wiki" target="_blank">API Doc</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">

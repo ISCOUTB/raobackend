@@ -11,6 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class AlarmsController extends Controller {
 
+    public function getJson() {
+        $alarms = AlarmsModel::select('STUDENTID', 'PERIODO', 'failedattendance', 'created_at')->get();
+        return response()->json($alarms);
+    }
+
     /**
      * Función para mostrar estadisticas de asistencia de un estudiante a un curso
      * @param $idstudent , $idcourse

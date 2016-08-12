@@ -13,7 +13,7 @@ class StatisticsValidator {
     public $validationPass;
     public $validationMessage;
 
-    public function validateUserEnrol($username, $id, $course) {
+    public function validateUserEnrolAndCourse($username, $id, $course) {
         $NRC = $course->NRC_PERIODO_KEY;
         $matriculado = MatriculasModel::enrolledAs($NRC, $id);
 
@@ -51,8 +51,7 @@ class StatisticsValidator {
         return $data;
     }
 
-    public function validateIsTeacherOfCourse($username, $NRC) {
-        $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
+    public function validateIsTeacherOfCourse($username, $course) {
         if ($course) {
             if (strtolower($course->DOCENTEID) != $username) {
                 $this->validationMessage = "No tienes acceso a esta información.";

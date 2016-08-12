@@ -6,4 +6,5 @@ class AlarmsModel extends Model {
 
     protected $table='alarms';
 
+    protected $fillable = ['failedattendance', 'STUDENTID', 'PERIODO'];
 }

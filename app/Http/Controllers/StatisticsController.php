@@ -26,7 +26,7 @@ class StatisticsController extends Controller {
         $username = strtolower(RequestData::input('username'));
         $statisticsValidation = new \App\Validators\StatisticsValidator();
         $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
-        $data = $statisticsValidation->validateUserEnrol($username, $id, $course);
+        $data = $statisticsValidation->validateUserEnrolAndCourse($username, $id, $course);
         if ($statisticsValidation->validationPass) {
             $object = array("student_id" => $id, "nrc" => $NRC);
             $came = $notcame = 0;
@@ -73,10 +73,55 @@ class StatisticsController extends Controller {
         }
     }
 
+    public function statisticsByStudentByCourse($id, $course, $response = true) {
+        $data = AttendanceModel::where("STUDENTID", "=", $id)->where("NRC", "=", $NRC)->get();
+        $object = array("student_id" => $id, "nrc" => $course->NRC_PERIODO_KEY);
+        $came = $notcame = 0;
+        foreach ($data as $value) {
+            $attendance_log = $value["ATTENDANCE"];
+            switch ($attendance_log) {
+                case 0:
+                    $came += 1;
+                    break;
+                case 1:
+                    $notcame += 1;
+                    break;
+            }
+        }
+        $total = $came + $notcame;
+        $attendance = array();
+        //Two dimensional arrays
+        if ($total != 0) {
+            $attendance['percent'] = array(
+                array("key" => "Came", "value" => round($came * 100 / $total, 2, PHP_ROUND_HALF_UP)), //2 decimals round
+                array("key" => "Did not come", "value" => round($notcame * 100 / $total, 2, PHP_ROUND_HALF_UP)),
+            );
+            $attendance['value'] = array(
+                array("key" => "Came", "value" => $came), //2 decimals round
+                array("key" => "Did not come", "value" => $notcame),
+            );
+        } else {
+            $attendance['percent'] = array(
+                array("key" => "Came", "value" => 0),
+                array("key" => "Did not come", "value" => 0),
+            );
+            $attendance['value'] = $attendance['percent'];
+        }
+        $object["attendance"] = $attendance;
+        $object["subject"] = $course->NOMBREASIGNATURA;
+
+        if ($response) {
+            return response()->json($object); //returns json object
+        } else {
+            return($object); //returns an array
+        }
+    }
+
     public function showStatisticsByCourse($NRC) {
         $username = strtolower(RequestData::input('username'));
         $statisticsValidator = new \App\Validators\StatisticsValidator();
-        $statisticsValidator->validateIsTeacherOfCourse($username, $NRC);
+        $course = CoursesModel::where("NRC_PERIODO_KEY", "=", $NRC)->first();
+        $statisticsValidator->validateIsTeacherOfCourse($username, $course);
         if ($statisticsValidator->validationPass) {
             $matriculas = MatriculasModel::where("IDNUMBER", "=", $NRC)->where('ROLE', '=', 'student')->get();
             $response_data = array(
@@ -87,7 +132,7 @@ class StatisticsController extends Controller {
             );
             foreach ($matriculas as $matricula) {
                 $student = $matricula->student;
-                $course_attendance = self::showStatisticsByStudentByCourse($student["ID"], $NRC, false);
+                $course_attendance = self::statisticsByStudentByCourse($student["ID"], $course, false);
                 $student_attendance = array(
                     "student_name" => $student["NOMBRES"],
                     "student_lastname" => $student["APELLIDOS"],

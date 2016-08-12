@@ -31,6 +31,7 @@ class Kernel extends HttpKernel {
         'filter' => 'App\Http\Middleware\FilterMiddleware',
         'tokengenerator' => 'App\Http\Middleware\TokenGeneratorMiddleware',
         'tokenauth' => 'App\Http\Middleware\TokenAuthMiddleware',
+        'appskey' => 'App\Http\Middleware\AppsKeyMiddleware',
     ];
 
 }

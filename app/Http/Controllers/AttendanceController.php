@@ -8,6 +8,8 @@ use Validator,
     Input,
     Redirect;
 use Illuminate\Http\Request;
+use App\Events\AttendanceTaken;
+use Event;
 
 class AttendanceController extends Controller {
 
@@ -44,19 +46,22 @@ class AttendanceController extends Controller {
         $json  = Input::json()->all();
 
         $size =  sizeof($json['estudiantes']);
+        $attendances = array();
         for($i=0;$i<$size;$i++){
             $attendance = new AttendanceModel;
             $attendance->NRC            = $json['nrc'];
             $attendance->STUDENTID      = $json['estudiantes'][$i]['id'];
             $attendance->ATTENDANCE     = $json['estudiantes'][$i]['attendance'];
             $attendance->save();
+            $attendances[$i] = $attendance;
         }
-        //return "Registro Creado";
+        Event::fire(new AttendanceTaken($attendances));
+        return "Registro Creado";
 
         //generacion de alarmas
-        $alarm =  new AlarmsController();
-        $alarm = $alarm->createAlarm($json['nrc']);
-        return $alarm;
+//        $alarm =  new AlarmsController();
+//        $alarm = $alarm->createAlarm($json['nrc']);
+//        return $alarm;
     }
 
     /**

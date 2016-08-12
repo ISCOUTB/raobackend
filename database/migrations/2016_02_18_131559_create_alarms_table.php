@@ -12,12 +12,10 @@ class CreateAlarmsTable extends Migration {
      */
     public function up() {
         Schema::create('alarms', function(Blueprint $table) {
-            $table->increments('ID')->unsigned();
-            $table->string('TEACHER', 10);
-            $table->string('STUDENT', 10);
-            $table->string('COURSE', 15);
-            $table->string('TYPE', 10);
-            $table->string('MESSAGE', 130);
+            $table->increments('id')->unsigned();
+            $table->string('STUDENTID', 10);
+            $table->string('PERIODO', 6);
+            $table->integer('failedattendance');
             $table->timestamps();
         });
     }

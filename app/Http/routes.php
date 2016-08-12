@@ -18,6 +18,7 @@ use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AlarmsController;
+use App\Events\AttendanceTaken;
 
 //Event Listeners
 Event::listen('teacher.showTeachersInfo', function($id) {
@@ -65,12 +66,23 @@ Route::get('auth/login', 'Auth\AuthController@getLogin');
 Route::post('auth/login', 'Auth\AuthController@postLogin');
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
+Route::group(['middleware' => 'appskey'], function() {
+    Route::get('alarms', 'AlarmsController@getJson');
+});
+
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
-    Route::get('periodos', 'PeriodosController@index');
-    Route::get('periodos/{id}/edit', 'PeriodosController@edit');
-    Route::get('periodos/create', 'PeriodosController@create');
-    Route::post('periodo/{id}/update', 'PeriodosController@update');
-    Route::post('periodo/store', 'PeriodosController@store');
+Route::get('periodos', 'PeriodosController@index');
+Route::get('periodos/{id}/edit', 'PeriodosController@edit');
+Route::get('periodos/create', 'PeriodosController@create');
+Route::post('periodo/{id}/update', 'PeriodosController@update');
+Route::post('periodo/store', 'PeriodosController@store');
+Route::get('apps', 'AppsController@index');
+Route::get('apps/{id}/edit', 'AppsController@edit');
+Route::get('apps/create', 'AppsController@create');
+Route::post('apps/{id}/update', 'AppsController@update');
+Route::post('apps/store', 'AppsController@store');
+Route::get('apps/{id}/destroy', 'AppsController@destroy');
+Route::get('apps/{id}/refresh-hash', 'AppsController@refreshHash');
 });
 
 //Routes
@@ -78,91 +90,91 @@ Route::post('token', ['middleware' => 'tokengenerator', 'uses' => 'Auth\TokenCon
 
 Route::group(['middleware' => 'tokenauth'], function() {
 
-    Route::post('tokenlogout', 'Auth\TokenController@tokenLogout');
+Route::post('tokenlogout', 'Auth\TokenController@tokenLogout');
+/*
+ * Muestra la información de un profesor
+ */
+Route::get('teacher/{id}', function ($id) {
+    Event::fire('teacher.showTeachersInfo', $id);
+    $controller = new PersonsController();
+    return $controller->showTeachersInfo($id);
+});
+
+/*
+ * Muestra la información de un estudiante
+ */
+Route::get('student/{id}', function ($id) {
+    Event::fire('student.showStudentsInfo', $id);
+    $controller = new PersonsController();
+    return $controller->showStudentsInfo($id);
+});
+
+/*
+ * Muestra la información de un curso. Si es docente, muestra la lista de estudiantes.
+ */
+Route::get('course/{NRC}', function ($NRC) {
+    Event::fire('course.showCoursesInfo', $NRC);
+    $controller = new CoursesController();
+    return $controller->showCoursesInfo($NRC);
+});
+
+/*
+ * Muestra cursos que dicta el profesor id. Devuelve colección de cursos.
+ */
+Route::get('teacher/{id}/courses', function ($id) {
+    Event::fire('course.showCoursesByTeacher', $id);
+    $controller = new CoursesController();
+    return $controller->showCoursesByTeacher($id);
+});
+
+/*
+ * Muestra los cursos en los que esta inscrito el estudiante id
+ */
+Route::get('student/{id}/courses', 'CoursesController@showCoursesByStudent');
+
+/*
+ * Guarda asistencias en la base de datos
+ */
+Route::resource('attendance', 'AttendanceController');
+
+Route::group(['middleware' => 'filter'], function () {
     /*
-     * Muestra la información de un profesor
+     * Muestra las estadisticas de asistencia de un estudiante a un curso
      */
-    Route::get('teacher/{id}', function ($id) {
-        Event::fire('teacher.showTeachersInfo', $id);
-        $controller = new PersonsController();
-        return $controller->showTeachersInfo($id);
-    });
+    Route::get('student/{id}/course/{NRC}/attendance', 'StatisticsController@showStatisticsByStudentByCourse');
 
     /*
-     * Muestra la información de un estudiante
+     * Muestra las estadisticas de asistencia de un curso
      */
-    Route::get('student/{id}', function ($id) {
-        Event::fire('student.showStudentsInfo', $id);
-        $controller = new PersonsController();
-        return $controller->showStudentsInfo($id);
-    });
-
-    /*
-     * Muestra la información de un curso. Si es docente, muestra la lista de estudiantes.
-     */
-    Route::get('course/{NRC}', function ($NRC) {
+    Route::get('course/{NRC}/attendance', function ($NRC) {
         Event::fire('course.showCoursesInfo', $NRC);
-        $controller = new CoursesController();
-        return $controller->showCoursesInfo($NRC);
+        $controller = new StatisticsController();
+        return $controller->showStatisticsByCourse($NRC);
     });
 
     /*
-     * Muestra cursos que dicta el profesor id. Devuelve colección de cursos.
+     * Muestra las estadisticas de asistencia de un estudiante
      */
-    Route::get('teacher/{id}/courses', function ($id) {
-        Event::fire('course.showCoursesByTeacher', $id);
-        $controller = new CoursesController();
-        return $controller->showCoursesByTeacher($id);
+    //Route::get('student/{id}/attendance', 'StatisticsController@showStatisticsByStudent');
+
+    /*
+     * Muestra las alarmas por falta de asistencia de estudiantes a un curso
+     */
+    Route::get('course/{NRC}/alarms', function ($NRC) {
+        //Event::fire('course.showCoursesInfo', $NRC);
+        $controller = new AlarmsController();
+        return $controller->showCoursesAlarms($NRC);
     });
 
     /*
-     * Muestra los cursos en los que esta inscrito el estudiante id
+     * Muestra las alarmas por falta de asistencia de estudiantes a un curso
      */
-    Route::get('student/{id}/courses', 'CoursesController@showCoursesByStudent');
-
-    /*
-     * Guarda asistencias en la base de datos
-     */
-    Route::resource('attendance', 'AttendanceController');
-
-    Route::group(['middleware' => 'filter'], function () {
-        /*
-         * Muestra las estadisticas de asistencia de un estudiante a un curso
-         */
-        Route::get('student/{id}/course/{NRC}/attendance', 'StatisticsController@showStatisticsByStudentByCourse');
-
-        /*
-         * Muestra las estadisticas de asistencia de un curso
-         */
-        Route::get('course/{NRC}/attendance', function ($NRC) {
-            Event::fire('course.showCoursesInfo', $NRC);
-            $controller = new StatisticsController();
-            return $controller->showStatisticsByCourse($NRC);
-        });
-
-        /*
-         * Muestra las estadisticas de asistencia de un estudiante
-         */
-        //Route::get('student/{id}/attendance', 'StatisticsController@showStatisticsByStudent');
-
-        /*
-         * Muestra las alarmas por falta de asistencia de estudiantes a un curso
-         */
-        Route::get('course/{NRC}/alarms', function ($NRC) {
-            //Event::fire('course.showCoursesInfo', $NRC);
-            $controller = new AlarmsController();
-            return $controller->showCoursesAlarms($NRC);
-        });
-
-        /*
-         * Muestra las alarmas por falta de asistencia de estudiantes a un curso
-         */
-        /* Route::get('course/{NRC}/student/{id}/alarms', function ($NRC, $id) {
-          //Event::fire('course.showCoursesInfo', $NRC);
-          $controller = new AlarmsController();
-          return $controller->showAlarmsByStudentByCourse($NRC);
-          }); */
-    });
+    /* Route::get('course/{NRC}/student/{id}/alarms', function ($NRC, $id) {
+      //Event::fire('course.showCoursesInfo', $NRC);
+      $controller = new AlarmsController();
+      return $controller->showAlarmsByStudentByCourse($NRC);
+      }); */
+});
 });
 
 
