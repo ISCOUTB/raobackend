@@ -62,6 +62,12 @@ Event::listen('course.showCoursesByTeacher', function($id) {
 });
 
 // Authentication routes...
+Route::get('/', function(){
+    return redirect('auth/login');    
+});
+Route::get('/home', function(){
+    return redirect('admin/periodos');    
+});
 Route::get('auth/login', 'Auth\AuthController@getLogin');
 Route::post('auth/login', 'Auth\AuthController@postLogin');
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
